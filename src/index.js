@@ -12,6 +12,12 @@ const input = document.querySelector('#search-box');
 const oneCountry = document.querySelector('.country-info');
 const countryList = document.querySelector('.country-list');
 
+// create header
+
+const header = document.createElement('h1');
+header.textContent = 'Please enter country name';
+input.before(header);
+
 //__add some style
 
 countryList.style.listStyle = 'none';
