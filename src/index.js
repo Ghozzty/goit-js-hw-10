@@ -15,7 +15,7 @@ const countryList = document.querySelector('.country-list');
 // create header
 
 const header = document.createElement('h1');
-header.textContent = 'Please enter country name';
+header.textContent = 'Enter country name';
 input.before(header);
 
 //__add some style
@@ -32,9 +32,9 @@ input.addEventListener('input', debounce(inputEvent, DEBOUNCE_DELAY));
 function inputEvent(e) {
   let nameCountry = e.target.value;
 
-  if (!nameCountry) {
-    countryList.innerHTML = '';
-    oneCountry.innerHTML = '';
+  if (!checkValue(nameCountry)) {
+    clearFunc();
+    Notify.info('Please enter county name');
     return;
   } else {
     fetchCountries(nameCountry)
@@ -42,6 +42,7 @@ function inputEvent(e) {
         const lengthArr = data.length;
 
         if (lengthArr > 10) {
+          clearFunc();
           Notify.info(
             'Too many matches found. Please enter a more specific name.'
           );
@@ -58,13 +59,23 @@ function inputEvent(e) {
           return;
         }
       })
-      .catch(error =>
-        Notify.failure('Oops, there is no country with that name')
-      );
+      .catch(error => {
+        clearFunc();
+        return Notify.failure('Oops, there is no country with that name');
+      });
   }
 }
 
 // _service functions
+
+function clearFunc() {
+  countryList.innerHTML = '';
+  oneCountry.innerHTML = '';
+}
+
+function checkValue(value) {
+  return value.trim().length;
+}
 
 function renderOnecountry(data) {
   const markup = `<p style = 'font-size: 30px'><img width = 40 height = 40 src="${
@@ -93,10 +104,10 @@ function renderMoreCountries(data) {
 
 function extractLanguages(langObj) {
   let languages = '';
+
   const langArr = Object.values(langObj);
-  for (const lang of langArr) {
-    languages += `${lang}, `;
-  }
+
+  langArr.forEach(lang => (languages += `${lang}, `));
 
   languages = languages.slice(0, -2);
 
